@@ -71,14 +71,14 @@ const SpHttp = (function(options = {}) {
         if(config.ID) {
             url += '('+config.ID+')';
             if(config.select&&config.select.length>0) { url += first+'$select='+config.select; first = '&'; }
-            if(config.expand&&config.expand.length>0) { url += first+'$expand='+config.expand; first = '&'; }
+            if(config.expand&&config.expand.length>0) { url += first+'$expand='+config.expand; first = '&'; listKeys = ['']; }
             return rest(url);
         }
 
         url += '?$top='+config.top;
         first = '&';
         if(config.select&&config.select.length>0) { url += first+'$select='+config.select; first = '&'; }
-        if(config.expand&&config.expand.length>0) { url += first+'$expand='+config.expand; first = '&'; }
+        if(config.expand&&config.expand.length>0) { url += first+'$expand='+config.expand; first = '&'; listKeys = ['']; }
 
         if(!config.recursive) {
             if(config.filter&&config.filter.length>0) { url += first+'$filter='+config.filter; first = '&'; }
