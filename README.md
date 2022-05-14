@@ -6,7 +6,7 @@ A lightweight promise-based Javascript library for Sharepoint Rest services (4Kb
 <script type="text/javascript" src="SpHttp.min.js"></script>
 <script type="text/javascript">
   // Get current user information
-  console.log( 'The lib is working!', SpHttp().user() );
+  console.log( 'The lib is working!', await SpHttp().user() );
 </script>
 ```
 
