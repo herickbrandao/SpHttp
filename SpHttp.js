@@ -33,7 +33,7 @@ const SpHttp = (function(options = {}) {
 
     function cleanObj(obj, allowNulls = true) {
         var newObject = {};
-        if(listKeys.join().length > 0) {
+        if(listKeys.join().length>0) {
             for(key in listKeys) {
                 if(obj[listKeys[key]]) {
                     newObject[listKeys[key]] = obj[listKeys[key]];
@@ -81,7 +81,8 @@ const SpHttp = (function(options = {}) {
         if(config.expand&&config.expand.length>0) { url += first+'$expand='+config.expand; first = '&'; }
 
         if(!config.recursive) {
-            if(config.where&&config.where.length>0) { url += first+'$filter='+config.where; first = '&'; }
+            if(config.filter&&config.filter.length>0) { url += first+'$filter='+config.filter; first = '&'; }
+            if(config.orderby&&config.orderby.length>0) { url += first+'$orderby='+config.orderby; first = '&'; }
             return rest(url);
         }
 
@@ -183,6 +184,7 @@ const SpHttp = (function(options = {}) {
     return {
         list,
         user,
-        rest
+        rest,
+        version: '0.0.2-alpha'
     };
 });
