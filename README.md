@@ -26,6 +26,8 @@ SpHttp().list('ListName').get({
   top, // default: 5000 (optional)
   select, // example: ['ID','Title'] (optional)
   expand, // example: ['OtherList'] (optional)
+  orderby, // example: 'Title asc' (optional)
+  filter, // example: 'ID eq 1' (optional)
   recursive, // default: false (boolean) - get all list items [useful if the list is over 5000 items] (optional),
   ID, // example: 1 - returns a specific item (optional)
 });
