@@ -164,7 +164,26 @@ const SpHttp = (function(options = {}) {
     function user(config = false) {
         switch(typeof config) {
             case "string":
-                return rest("/_api/web/siteusers?$filter=startswith(Title,'"+config+"')");
+                var searches = [
+                    config.toLowerCase(),
+                    config.toUpperCase(),
+                ];
+                
+                // Capitalize
+                const str = searches[0];
+                const arr = str.split(" ");
+                for (var i = 0; i < arr.length; i++) { arr[i] = arr[i].charAt(0).toUpperCase() + arr[i].slice(1); }
+                searches[2] = arr.join(" ");
+
+                // Normalize
+                searches[3] = config.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+                
+                var url = '_api/web/siteusers?$filter=(';
+                url += "(startswith(Title,'"+searches[0]+"')) or ";
+                url += "(startswith(Title,'"+searches[1]+"')) or ";
+                url += "(startswith(Title,'"+searches[3]+"')) or ";
+                url += "(startswith(Title,'"+searches[2]+"')))";
+                return rest(url);
                 break;
             case "number":
                 return rest('_api/Web/SiteUserInfoList/Items('+config+')');
@@ -185,6 +204,6 @@ const SpHttp = (function(options = {}) {
         list,
         user,
         rest,
-        version: '0.0.2-alpha'
+        version: '0.0.21'
     };
 });
