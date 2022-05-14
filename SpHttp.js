@@ -33,14 +33,16 @@ const SpHttp = (function(options = {}) {
 
     function cleanObj(obj, allowNulls = true) {
         var newObject = {};
-        for(key in listKeys) {
-            if(obj[listKeys[key]]) {
-                newObject[listKeys[key]] = obj[listKeys[key]];
-            } else if(allowNulls) {
-                newObject[listKeys[key]] = null;
+        if(listKeys.join().length > 0) {
+            for(key in listKeys) {
+                if(obj[listKeys[key]]) {
+                    newObject[listKeys[key]] = obj[listKeys[key]];
+                } else if(allowNulls) {
+                    newObject[listKeys[key]] = null;
+                }
             }
         }
-        return listKeys.length>0 ? newObject : obj;
+        return listKeys.join().length>0 ? newObject : obj;
     }
 
     function list(name) {
@@ -79,6 +81,7 @@ const SpHttp = (function(options = {}) {
         if(config.expand&&config.expand.length>0) { url += first+'$expand='+config.expand; first = '&'; }
 
         if(!config.recursive) {
+            if(config.where&&config.where.length>0) { url += first+'$filter='+config.where; first = '&'; }
             return rest(url);
         }
 
