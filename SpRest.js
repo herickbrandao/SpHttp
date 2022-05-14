@@ -182,6 +182,7 @@ const SpHttp = (function(options = {}) {
     return {
         list,
         user,
-        rest
+        rest,
+        version: '0.0.2-alpha'
     };
 });
