@@ -112,3 +112,7 @@ Document Library - Filter
 ```js
 SpHttp().attach({ library: '/sites/myWebSite/Documents', name: 'file', startswith: true });
 ```
+
+## Source of Inspiration
+- [SpRestLib - Microsoft SharePoint REST JavaScript Library](https://github.com/gitbrent/SpRestLib/)
+- [axios - Promise based HTTP client for the browser and node.js](https://github.com/axios/axios)
