@@ -1,5 +1,5 @@
 # SpHttp
-A lightweight promise-based Javascript library for Sharepoint Rest services (4Kb Min ONLY!)
+A lightweight promise-based Javascript library for Sharepoint Rest services (7Kb ONLY!)
 
 ## Get Started
 ```html
@@ -47,6 +47,13 @@ SpHttp().list('ListName').put({
 SpHttp().list('ListName').del({
   ID: 1, // required
 });
+
+// Attachment List Example
+SpHttp().list('ListName').attach({
+  ID: 1, // required
+  target: '#inputFile', // every file at <input type="file" id="inputFile" /> will be attached (optional)
+  delete: 'filename.png' // filename that should be deleted (optional)
+});
 ```
 
 ## Users
@@ -64,4 +71,38 @@ SpHttp().user('Name');
 SpHttp().user({
   ID: 1, // required
 });
+```
+
+## Document Library
+```js
+SpHttp().attach({
+  library: '/sites/myWebSite/Documents', // relative lib URL (required)
+  name: 'filename.png', // filename for GET/POST/UPDATE requests (optional)
+  target: '#inputFile', // every file at <input type="file" id="inputFile" /> will be attached (optional)
+  delete: 'filename.png' // filename that should be deleted (optional)
+});
+```
+
+## Examples
+Get List Item ID,Title By ID
+```js
+SpHttp().list('ListName').get({ ID: 11, select: ['ID', 'Title'] });
+```
+
+Get Lists over 5000 items
+```js
+SpHttp().list('ListName').get({ select: ['ID', 'Title'], recursive: true });
+```
+
+Attach File(s) at List Item
+```html
+<input type="file" id="inputFile" />
+
+<script type="text/javascript" async>
+  const attachs = await SpHttp().list('ListName').attach({ ID: 97 }); // getter
+
+  document.getElementById("inputFile").addEventListener("change", function(e) {
+    SpHttp().list('ListName').attach({ ID: 97, target: '#inputFile' }); // setter - Warning: this method does not overwrite!
+  });
+</script>
 ```

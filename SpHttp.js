@@ -34,7 +34,7 @@ const SpHttp = (function(options = {}) {
     function cleanObj(obj, allowNulls = true) {
         var newObject = {};
         if(listKeys.join().length>0) {
-            for(key in listKeys) {
+            for(var key in listKeys) {
                 if(obj[listKeys[key]]) {
                     newObject[listKeys[key]] = obj[listKeys[key]];
                 } else if(allowNulls) {
@@ -216,12 +216,12 @@ const SpHttp = (function(options = {}) {
         var items = typeof config.target==="string"&&document.querySelector(config.target) ? document.querySelector(config.target).files : false;
         var appends = [];
 
-        for(i in items) { if(typeof items[i] === 'object') { appends.push(getFileBuffer(items[i])); } }
+        for(var i in items) { if(typeof items[i] === 'object') { appends.push(getFileBuffer(items[i])); } }
 
         return Promise.all(appends).then(function(promises) {
             var httpRes = [], url = '';
 
-            for(i in promises) {
+            for(var i in promises) {
                 options.headers = Object.assign(options.headers, {
                     "X-RequestDigest": document.querySelector("#__REQUESTDIGEST").value,
                     "content-length": promises[i].byteLength
@@ -243,7 +243,58 @@ const SpHttp = (function(options = {}) {
                 return rest(url, { method: "DELETE" });
             }
 
-            return Promise.all(httpRes);
+            return Promise.all(httpRes).then(function(res) { 
+                for(var i in res) { if(res[i]&&res[i].d) { res[i] = res[i].d; } }
+                return res;
+            });
+        });  
+    }
+
+    function attach(config = {}) {
+        if(!window.FileReader) { return { error: '[ERROR] Your browser does not have support for FileReader!' }; }
+        if(!config.library) { return { error: '[ERROR] List library not found at attach request!' }; }
+        if(!config.name) { config.tname = ''; } else { config.tname = "('"+config.name+"')"; }
+        if(!config.target&&!config.delete) {
+            return rest("_api/web/GetFolderByServerRelativeUrl('"+config.library+"')/Files"+config.tname);
+        }
+
+        var items = typeof config.target==="string"&&document.querySelector(config.target) ? document.querySelector(config.target).files : false;
+        var appends = [];
+
+        for(var i in items) { if(typeof items[i] === 'object') { appends.push(getFileBuffer(items[i])); } }
+
+        return Promise.all(appends).then(function(promises) {
+            var httpRes = [], url = '';
+
+            for(var i in promises) {
+                options.headers = Object.assign(options.headers, {
+                    "X-RequestDigest": document.querySelector("#__REQUESTDIGEST").value,
+                    "content-length": promises[i].byteLength
+                });
+                var bytes = new Uint8Array(promises[i]);
+                var name = config.name ? config.name : items[i].name;
+                url = "_api/web/GetFolderByServerRelativeUrl('"+config.library+"')/Files/Add(url='"+name+"', overwrite=true)";
+                
+                httpRes.push(fetchWithTimeout(url, { method: "POST", body: promises[i] }));
+            }
+
+            if(typeof config.delete === "string" && (config.delete&&config.delete.length>0)) {
+                options = JSON.parse(optbkp); // options reset
+                options.headers = Object.assign(options.headers, {
+                    "X-RequestDigest": document.querySelector("#__REQUESTDIGEST").value,
+                    "X-HTTP-Method": "DELETE",
+                });
+                
+                url = "_api/web/GetFolderByServerRelativeUrl('"+config.library+"')/Files"+config.delete;
+                return rest(url, { method: "DELETE" });
+            } else if(config.delete) {
+                return { error: '[ERROR] Filename is missing!' };
+            }
+
+            return Promise.all(httpRes).then(function(res) { 
+                for(var i in res) { if(res[i]&&res[i].d) { res[i] = res[i].d; } }
+                return res;
+            });
         });  
     }
 
@@ -268,6 +319,7 @@ const SpHttp = (function(options = {}) {
     return {
         list,
         user,
-        version: '0.0.22'
+        attach,
+        version: '0.1.0'
     };
 });
