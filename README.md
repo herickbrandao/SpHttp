@@ -1,4 +1,4 @@
-# SpHttp
+# SpHttp v0.1.1
 A lightweight promise-based Javascript library for Sharepoint Rest services (7Kb ONLY!)
 
 ## Get Started
@@ -78,6 +78,7 @@ SpHttp().user({
 SpHttp().attach({
   library: '/sites/myWebSite/Documents', // relative lib URL (required)
   name: 'filename.png', // filename for GET/POST/UPDATE requests (optional)
+  startswith: true, // default: false - filters the file by name (optional)
   target: '#inputFile', // every file at <input type="file" id="inputFile" /> will be attached (optional)
   delete: 'filename.png' // filename that should be deleted (optional)
 });
@@ -105,4 +106,9 @@ Attach File(s) at List Item
     SpHttp().list('ListName').attach({ ID: 97, target: '#inputFile' }); // setter - Warning: this method does not overwrite!
   });
 </script>
+```
+
+Document Library - Filter
+```js
+SpHttp().attach({ library: '/sites/myWebSite/Documents', name: 'file', startswith: true });
 ```

@@ -253,8 +253,9 @@ const SpHttp = (function(options = {}) {
     function attach(config = {}) {
         if(!window.FileReader) { return { error: '[ERROR] Your browser does not have support for FileReader!' }; }
         if(!config.library) { return { error: '[ERROR] List library not found at attach request!' }; }
-        if(!config.name) { config.tname = ''; } else { config.tname = "('"+config.name+"')"; }
+        if(!config.name) { config.tname = ''; } else if(!config.startswith) { config.tname = "('"+config.name+"')"; }
         if(!config.target&&!config.delete) {
+            if(config.startswith&&config.name) { config.tname = "?$filter=startswith(Name,'"+config.name+"')"; }
             return rest("_api/web/GetFolderByServerRelativeUrl('"+config.library+"')/Files"+config.tname);
         }
 
@@ -320,6 +321,6 @@ const SpHttp = (function(options = {}) {
         list,
         user,
         attach,
-        version: '0.1.0'
+        version: '0.1.1'
     };
 });
