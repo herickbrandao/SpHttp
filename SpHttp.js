@@ -268,7 +268,6 @@ const SpHttp = (function(options = {}) {
     return {
         list,
         user,
-        attach,
         version: '0.0.22'
     };
 });
