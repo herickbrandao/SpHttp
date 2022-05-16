@@ -5,7 +5,7 @@ const SpHttp = (function(options = {}) {
     if(!options.timeout) { options.timeout = 8000; }
     options.headers = Object.assign({ "Accept": "application/json; odata=verbose" }, options.headers);
 
-    var listName = '', listKeys = [], userName = {};
+    var listName = '', listKeys = [], optbkp = JSON.stringify(options);
 
     function rest(url, config = {}) {
         return fetchWithTimeout(url, config).then(function(resp) {
@@ -20,7 +20,7 @@ const SpHttp = (function(options = {}) {
         const controller = new AbortController();
         const id = setTimeout(function() { return controller.abort(); }, options.timeout);
         const response = await fetch(options.baseURL+url, Object.assign({ signal: controller.signal, headers: options.headers }, fetchOptions))
-            .then(function(resp) { return options.headers["X-HTTP-Method"] ? true : resp.json(); })
+            .then(async function(resp) { var retorno = true; try { retorno = await resp.json(); } catch(e) { return true; } return retorno; })
             .then(function(resp) {
                 if(resp&&resp["odata.error"]&&resp["odata.error"].message&&resp["odata.error"].message.value) { return { error: resp["odata.error"].message.value }; }
                 else if(resp&&resp["error"]&&resp["error"].message&&resp["error"].message.value) { return { error: resp["error"].message.value }; }
@@ -47,13 +47,19 @@ const SpHttp = (function(options = {}) {
 
     function list(name) {
         listName = name;
+        options = JSON.parse(optbkp); // options reset
+
         return {
             get: getList,
+            items: getList,
+            add: postList,
             post: postList,
+            create: postList,
             put: putList,
             update: putList,
             del: delList,
             delete: delList,
+            attach: attachList
         };
     }
 
@@ -162,6 +168,8 @@ const SpHttp = (function(options = {}) {
     }
 
     function user(config = false) {
+        options = JSON.parse(optbkp); // options reset
+
         switch(typeof config) {
             case "string":
                 var searches = [
@@ -200,10 +208,67 @@ const SpHttp = (function(options = {}) {
         return { error: '[ERROR] User Request Failed!' };
     }
 
+    function attachList(config = {}) {
+        if(!window.FileReader) { return { error: '[ERROR] Your browser does not have support for FileReader!' }; }
+        if(isNaN(config.ID)) { return { error: '[ERROR] List ID not found at attach request!' }; }
+        if(!config.target&&!config.delete) { return rest("_api/lists/getbytitle('"+listName+"')/items("+config.ID+")/AttachmentFiles"); }
+
+        var items = typeof config.target==="string"&&document.querySelector(config.target) ? document.querySelector(config.target).files : false;
+        var appends = [];
+
+        for(i in items) { if(typeof items[i] === 'object') { appends.push(getFileBuffer(items[i])); } }
+
+        return Promise.all(appends).then(function(promises) {
+            var httpRes = [], url = '';
+
+            for(i in promises) {
+                options.headers = Object.assign(options.headers, {
+                    "X-RequestDigest": document.querySelector("#__REQUESTDIGEST").value,
+                    "content-length": promises[i].byteLength
+                });
+                var bytes = new Uint8Array(promises[i]);
+                var name = items[i].name;
+                url = "_api/lists/GetByTitle('" + listName + "')/items(" + config.ID + ")/AttachmentFiles/add(FileName='" + name + "')";
+                
+                httpRes.push(fetchWithTimeout(url, { method: "POST", body: promises[i] }));
+            }
+
+            if(config.delete) {
+                options = JSON.parse(optbkp); // options reset
+                options.headers = Object.assign(options.headers, {
+                    "X-RequestDigest": document.querySelector("#__REQUESTDIGEST").value,
+                    "X-HTTP-Method": "DELETE",
+                });
+                url = "_api/lists/GetByTitle('" + listName + "')/items(" + config.ID + ")/AttachmentFiles/getByFileName('" + config.delete + "')";
+                return rest(url, { method: "DELETE" });
+            }
+
+            return Promise.all(httpRes);
+        });  
+    }
+
+    function getFileBuffer(file) {
+        return new Promise(function(resolve,reject) {
+            try {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    resolve(e.target.result);
+                }
+                reader.onerror = function(e) {
+                    reject({ error: e.target.error });
+                }
+                reader.readAsArrayBuffer(file);
+            } catch(error) {
+                console.error('[ERROR] '+error);
+                reject({ error: error });
+            };
+        });
+    }
+
     return {
         list,
         user,
-        rest,
-        version: '0.0.21'
+        attach,
+        version: '0.0.22'
     };
 });
