@@ -1,4 +1,4 @@
-# SpHttp v0.1.1
+# SpHttp v0.1.2
 A lightweight promise-based Javascript library for Sharepoint Rest services (7Kb ONLY!)
 
 ## Get Started
@@ -45,6 +45,11 @@ SpHttp().list('ListName').put({
 
 // Delete List Item Example
 SpHttp().list('ListName').del({
+  ID: 1, // required
+});
+
+// Recycle List Item Example
+SpHttp().list('ListName').recycle({
   ID: 1, // required
 });
 
