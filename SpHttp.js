@@ -59,6 +59,7 @@ const SpHttp = (function(options = {}) {
             update: putList,
             del: delList,
             delete: delList,
+            recycle: recycleList,
             attach: attachList
         };
     }
@@ -139,6 +140,25 @@ const SpHttp = (function(options = {}) {
         } else {
             console.error('[ERROR] Put request data is wrong!');
             return { error: '[ERROR] Put request data is wrong!' };
+        }
+
+        return fetchWithTimeout(url, { method: "POST", body: typeof item === 'object' ? JSON.stringify(item) : item });
+    }
+
+    function recycleList(item) {
+        options.headers = Object.assign(options.headers, {
+            "Accept": "application/json; odata=nometadata",
+            "Content-Type": "application/json;odata=nometadata",
+            "X-RequestDigest": document.querySelector("#__REQUESTDIGEST").value,
+        });
+
+        var url = "_api/lists/getbytitle('"+listName+"')/items";
+
+        if(typeof item === 'object' && item.ID) {
+            url += '('+item.ID+')/recycle()';
+        } else {
+            console.error('[ERROR] Recycle request data is wrong!');
+            return { error: '[ERROR] Recycle request data is wrong!' };
         }
 
         return fetchWithTimeout(url, { method: "POST", body: typeof item === 'object' ? JSON.stringify(item) : item });
@@ -321,6 +341,6 @@ const SpHttp = (function(options = {}) {
         list,
         user,
         attach,
-        version: '0.1.1'
+        version: '0.1.2'
     };
 });
