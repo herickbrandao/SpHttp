@@ -341,6 +341,7 @@ const SpHttp = (function(options = {}) {
         list,
         user,
         attach,
-        version: '0.1.2'
+        rest,
+        version: '0.1.3'
     };
 });
