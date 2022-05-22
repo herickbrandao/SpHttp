@@ -1,4 +1,4 @@
-# SpHttp v0.1.2
+# SpHttp v0.1.3
 A lightweight promise-based Javascript library for Sharepoint Rest services (7Kb ONLY!)
 
 ## Get Started
@@ -98,6 +98,11 @@ SpHttp().list('ListName').get({ ID: 11, select: ['ID', 'Title'] });
 Get Lists over 5000 items
 ```js
 SpHttp().list('ListName').get({ select: ['ID', 'Title'], recursive: true });
+```
+
+Make your own rest request
+```js
+SpHttp().rest("_api/lists/getbytitle('ListName')/items?$skiptoken=Paged%3dTRUE%26p_ID%3d15000&$top=5000");
 ```
 
 Attach File(s) at List Item
