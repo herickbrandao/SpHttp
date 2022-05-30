@@ -341,6 +341,7 @@ const SpHttp = (function(options = {}) {
         user,
         attach,
         rest,
+        fetch: fetchWithTimeout,
         version: '0.1.4'
     };
 });
