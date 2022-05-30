@@ -96,8 +96,7 @@ const SpHttp = (function(options = {}) {
         url = options.baseURL + url;
         var content = [];
         return new Promise(function(resolve,reject) {
-            
-            
+
             async function loop(url) {
                 fetchWithTimeout(url,{},{ cleanURL: true }).then(async function(resp) {
                     if(resp&&resp.d&&resp.d.results) { content.push.apply(content, resp.d.results.map(function(res) { return cleanObj(res); })); }
@@ -114,24 +113,24 @@ const SpHttp = (function(options = {}) {
     }
 
     function postList(item) {
-        options.headers = Object.assign(options.headers, {
+        options.headers = Object.assign({
             "Accept": "application/json; odata=nometadata",
             "Content-Type": "application/json;odata=nometadata",
             "X-RequestDigest": document.querySelector("#__REQUESTDIGEST").value
-        });
+        },options.headers);
 
         var url = "_api/lists/getbytitle('"+listName+"')/items";
         return fetchWithTimeout(url, { method: "POST", body: typeof item === 'object' ? JSON.stringify(item) : item });
     }
 
     function putList(item) {
-        options.headers = Object.assign(options.headers, {
+        options.headers = Object.assign({
             "Accept": "application/json; odata=nometadata",
             "Content-Type": "application/json;odata=nometadata",
             "X-RequestDigest": document.querySelector("#__REQUESTDIGEST").value,
             "IF-MATCH": "*",  
             "X-HTTP-Method": "MERGE"
-        });
+        },options.headers);
 
         var url = "_api/lists/getbytitle('"+listName+"')/items";
 
@@ -146,11 +145,11 @@ const SpHttp = (function(options = {}) {
     }
 
     function recycleList(item) {
-        options.headers = Object.assign(options.headers, {
+        options.headers = Object.assign({
             "Accept": "application/json; odata=nometadata",
             "Content-Type": "application/json;odata=nometadata",
             "X-RequestDigest": document.querySelector("#__REQUESTDIGEST").value,
-        });
+        },options.headers);
 
         var url = "_api/lists/getbytitle('"+listName+"')/items";
 
@@ -165,13 +164,13 @@ const SpHttp = (function(options = {}) {
     }
 
     function delList(item) {
-        options.headers = Object.assign(options.headers, {
+        options.headers = Object.assign({
             "Accept": "application/json; odata=nometadata",
             "Content-Type": "application/json;odata=nometadata",
             "X-RequestDigest": document.querySelector("#__REQUESTDIGEST").value,
             "IF-MATCH": "*",  
             "X-HTTP-Method": "DELETE"
-        });
+        },options.headers);
 
         var url = "_api/lists/getbytitle('"+listName+"')/items";
 
@@ -255,10 +254,10 @@ const SpHttp = (function(options = {}) {
 
             if(config.delete) {
                 options = JSON.parse(optbkp); // options reset
-                options.headers = Object.assign(options.headers, {
+                options.headers = Object.assign({
                     "X-RequestDigest": document.querySelector("#__REQUESTDIGEST").value,
                     "X-HTTP-Method": "DELETE",
-                });
+                },options.headers);
                 url = "_api/lists/GetByTitle('" + listName + "')/items(" + config.ID + ")/AttachmentFiles/getByFileName('" + config.delete + "')";
                 return rest(url, { method: "DELETE" });
             }
@@ -288,10 +287,10 @@ const SpHttp = (function(options = {}) {
             var httpRes = [], url = '';
 
             for(var i in promises) {
-                options.headers = Object.assign(options.headers, {
+                options.headers = Object.assign({
                     "X-RequestDigest": document.querySelector("#__REQUESTDIGEST").value,
                     "content-length": promises[i].byteLength
-                });
+                },options.headers);
                 var bytes = new Uint8Array(promises[i]);
                 var name = config.name ? config.name : items[i].name;
                 url = "_api/web/GetFolderByServerRelativeUrl('"+config.library+"')/Files/Add(url='"+name+"', overwrite=true)";
@@ -301,10 +300,10 @@ const SpHttp = (function(options = {}) {
 
             if(typeof config.delete === "string" && (config.delete&&config.delete.length>0)) {
                 options = JSON.parse(optbkp); // options reset
-                options.headers = Object.assign(options.headers, {
+                options.headers = Object.assign({
                     "X-RequestDigest": document.querySelector("#__REQUESTDIGEST").value,
                     "X-HTTP-Method": "DELETE",
-                });
+                },options.headers);
                 
                 url = "_api/web/GetFolderByServerRelativeUrl('"+config.library+"')/Files"+config.delete;
                 return rest(url, { method: "DELETE" });
@@ -342,6 +341,6 @@ const SpHttp = (function(options = {}) {
         user,
         attach,
         rest,
-        version: '0.1.3'
+        version: '0.1.4'
     };
 });
