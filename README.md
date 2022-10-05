@@ -60,7 +60,7 @@ SpHttp().list('ListName').attach({
   delete: 'filename.png' // filename that should be deleted (optional)
 });
 
-// Iterate List Example - Get a vast amount of data simultaneously (awesome for large lists like 50k of items)
+// Iterate List Example - Get a vast amount of data simultaneously (awesome for big lists like 50k of items)
 SpHttp().list('ListName').iterate({
   top, // default: 5000 (optional)
   select, // example: ['ID','Title'] (optional)
