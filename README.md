@@ -59,6 +59,14 @@ SpHttp().list('ListName').attach({
   target: '#inputFile', // every file at <input type="file" id="inputFile" /> will be attached (optional)
   delete: 'filename.png' // filename that should be deleted (optional)
 });
+
+// Iterate List Example - Get a vast amount of data simultaneously (awesome for large lists like 50k of items)
+SpHttp().list('ListName').iterate({
+  top, // default: 5000 (optional)
+  select, // example: ['ID','Title'] (optional)
+  expand, // example: ['OtherList'] (optional)
+  total, // list length, example: 50000 (optional)
+});
 ```
 
 ## Users

@@ -37,6 +37,8 @@ const SpHttp = (function(options = {}) {
             for(var key in listKeys) {
                 if(obj[listKeys[key]]) {
                     newObject[listKeys[key]] = obj[listKeys[key]];
+                } else if(obj[listKeys[key].split('/')[0]]) {
+                    newObject[listKeys[key]] = obj[listKeys[key].split('/')[0]][listKeys[key].split('/')[1]] || null;
                 } else if(allowNulls) {
                     newObject[listKeys[key]] = null;
                 }
@@ -60,7 +62,8 @@ const SpHttp = (function(options = {}) {
             del: delList,
             delete: delList,
             recycle: recycleList,
-            attach: attachList
+            attach: attachList,
+            iterate: getIterate
         };
     }
 
@@ -78,14 +81,14 @@ const SpHttp = (function(options = {}) {
         if(config.ID) {
             url += '('+config.ID+')';
             if(config.select&&config.select.length>0) { url += first+'$select='+config.select; first = '&'; }
-            if(config.expand&&config.expand.length>0) { url += first+'$expand='+config.expand; first = '&'; listKeys = ['']; }
+            if(config.expand&&config.expand.length>0) { url += first+'$expand='+config.expand; first = '&'; }
             return rest(url);
         }
 
         url += '?$top='+config.top;
         first = '&';
         if(config.select&&config.select.length>0) { url += first+'$select='+config.select; first = '&'; }
-        if(config.expand&&config.expand.length>0) { url += first+'$expand='+config.expand; first = '&'; listKeys = ['']; }
+        if(config.expand&&config.expand.length>0) { url += first+'$expand='+config.expand; first = '&'; }
 
         if(!config.recursive) {
             if(config.filter&&config.filter.length>0) { url += first+'$filter='+config.filter; first = '&'; }
@@ -336,12 +339,62 @@ const SpHttp = (function(options = {}) {
         });
     }
 
+    async function getIterate(config =  {}) {
+        if(!config.top) { config.top = 5000; }
+        if(!config.select) { config.select = ["ID"]; }
+        if(!config.select.includes('ID')) { config.select.push('ID'); }
+        if(!config.expand) { config.expand = []; }
+        if(typeof config.select === 'object') { config.select = config.select.join(); }
+        if(typeof config.expand === 'object') { config.expand = config.expand.join(); }
+        if(!config.total) {
+            var total = await rest("_api/lists/getbytitle('"+listName+"')/ItemCount");
+            config.total = total.ItemCount || 1;
+        }
+
+        listKeys = config.select.split(',');
+        var url = '?$top='+config.top;
+        if(config.select&&config.select.length>0) { url += '&$select='+config.select; }
+        if(config.expand&&config.expand.length>0) { url += '&$expand='+config.expand; }
+
+        var looped = parseInt(config.total / 5000) + 1, promises = [], results = [];
+
+        for(var i = 0; i < looped; i++) {
+            var info = "_api/web/lists/getbytitle('"+listName+"')/items"+url;
+
+            if(i>0) {
+                var skiptoken = config.top * i;
+                info += "&$skiptoken=Paged%3dTRUE%26p_ID%3d"+skiptoken;
+            }
+
+            promises.push( rest(info) );
+        }
+
+        var resp = await Promise.all(promises);
+        const uniqueIds = new Set();
+        var final = [];
+
+        for(var res of resp) {
+            if(res.error) {
+                final = res;
+                break;
+            }
+            var r = res.filter(function(a) {
+                const isDuplicate = uniqueIds.has(a.ID);
+                uniqueIds.add(a.ID);
+                return !isDuplicate;
+            });
+            final.push.apply(final,r);
+        }
+
+        return final;
+    }
+
     return {
         list,
         user,
         attach,
         rest,
         fetch: fetchWithTimeout,
-        version: '0.1.4'
+        version: '0.2.0'
     };
 });
