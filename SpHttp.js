@@ -366,7 +366,14 @@ const SpHttp = (function(options = {}) {
                 info += "&$skiptoken=Paged%3dTRUE%26p_ID%3d"+skiptoken;
             }
 
-            promises.push( rest(info) );
+            var iterate;
+            if(config.action && typeof config.action === 'function') {
+                iterate = rest(info).then(config.action);
+            } else {
+                iterate = rest(info);
+            }
+
+            promises.push( iterate );
         }
 
         var resp = await Promise.all(promises);
@@ -395,6 +402,6 @@ const SpHttp = (function(options = {}) {
         attach,
         rest,
         fetch: fetchWithTimeout,
-        version: '0.2.0'
+        version: '0.2.1'
     };
 });

@@ -1,4 +1,4 @@
-# SpHttp v0.2.0
+# SpHttp v0.2.1
 A lightweight promise-based Javascript library for Sharepoint Rest services (9Kb ONLY!)
 
 ## Get Started
@@ -60,12 +60,13 @@ SpHttp().list('ListName').attach({
   delete: 'filename.png' // filename that should be deleted (optional)
 });
 
-// Iterate List Example - Get a vast amount of data simultaneously (awesome for big lists like 50k of items)
+// Iterate List Example - Get a vast amount of data simultaneously (awesome for large lists like 50k of items)
 SpHttp().list('ListName').iterate({
   top, // default: 5000 (optional)
   select, // example: ['ID','Title'] (optional)
   expand, // example: ['OtherList'] (optional)
   total, // list length, example: 50000 (optional)
+  action, // bind a function after each request, example: a => { return a.filter(b => b.ID === 93) } (optional)
 });
 ```
 
