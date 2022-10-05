@@ -1,4 +1,4 @@
-# SpHttp v0.1.4
+# SpHttp v0.2.0
 A lightweight promise-based Javascript library for Sharepoint Rest services (7Kb ONLY!)
 
 ## Get Started
