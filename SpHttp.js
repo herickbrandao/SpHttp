@@ -356,7 +356,7 @@ const SpHttp = (function(options = {}) {
         if(config.select&&config.select.length>0) { url += '&$select='+config.select; }
         if(config.expand&&config.expand.length>0) { url += '&$expand='+config.expand; }
 
-        var looped = parseInt(config.total / 5000) + 1, promises = [], results = [];
+        var looped = parseInt(config.total / config.top) + 1, promises = [], results = [];
 
         for(var i = 0; i < looped; i++) {
             var info = "_api/web/lists/getbytitle('"+listName+"')/items"+url;
@@ -402,6 +402,6 @@ const SpHttp = (function(options = {}) {
         attach,
         rest,
         fetch: fetchWithTimeout,
-        version: '0.2.1'
+        version: '0.2.2'
     };
 });
