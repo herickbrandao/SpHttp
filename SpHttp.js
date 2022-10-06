@@ -353,7 +353,7 @@ const SpHttp = (function(options = {}) {
 
         listKeys = config.select.split(',');
         var url = '?$top='+config.top;
-        if(config.select&&config.select.length>0) { url += '&$select='+config.select; }
+        if(config.select&&config.select.length>1) { url += '&$select='+config.select; }
         if(config.expand&&config.expand.length>0) { url += '&$expand='+config.expand; }
 
         var looped = parseInt(config.total / 5000) + 1, promises = [], results = [];
