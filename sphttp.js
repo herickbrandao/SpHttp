@@ -41,8 +41,8 @@ const sphttp = (function(options = {}) {
                     if(!newObject[listKeys[key].split('/')[0]]) { newObject[listKeys[key].split('/')[0]] = []; }
                     if(obj[listKeys[key].split('/')[0]].results) {
                         newObject[listKeys[key].split('/')[0]].push(obj[listKeys[key].split('/')[0]].results);
-                    } else if(obj[listKeys[key].split('/')[0]]&& obj[listKeys[key].split('/')[0]][listKeys[key].split('/')[1]]) {
-                        newObject[listKeys[key].split('/')[0]].push( obj[listKeys[key].split('/')[0]] );
+                    } else if(obj[listKeys[key].split('/')[0]]&&obj[listKeys[key].split('/')[0]][listKeys[key].split('/')[1]]) {
+                        newObject[listKeys[key].split('/')[0]][0] = obj[listKeys[key].split('/')[0]];
                     }
                 } else if(allowNulls) {
                     newObject[listKeys[key]] = null;
