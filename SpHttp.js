@@ -38,7 +38,14 @@ const SpHttp = (function(options = {}) {
                 if(obj[listKeys[key]]) {
                     newObject[listKeys[key]] = obj[listKeys[key]];
                 } else if(obj[listKeys[key].split('/')[0]]) {
-                    newObject[listKeys[key]] = obj[listKeys[key].split('/')[0]][listKeys[key].split('/')[1]] || null;
+                    var name = listKeys[key].split('/')[0]+'_'+listKeys[key].split('/')[1];
+                    if(obj[listKeys[key].split('/')[0]][listKeys[key].split('/')[1]]) {
+                        newObject[name] = obj[listKeys[key].split('/')[0]][listKeys[key].split('/')[1]];
+                    } else if(obj[listKeys[key].split('/')[0]].results) {
+                        newObject[listKeys[key].split('/')[0]] = obj[listKeys[key].split('/')[0]].results;
+                    } else {
+                        newObject[name] = null;
+                    }
                 } else if(allowNulls) {
                     newObject[listKeys[key]] = null;
                 }
@@ -402,6 +409,6 @@ const SpHttp = (function(options = {}) {
         attach,
         rest,
         fetch: fetchWithTimeout,
-        version: '0.2.2'
+        version: '0.3.0'
     };
 });
