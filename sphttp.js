@@ -39,8 +39,8 @@ const sphttp = (function(options = {}) {
                     newObject[listKeys[key]] = obj[listKeys[key]];
                 } else if(obj[listKeys[key].split('/')[0]]) {
                     if(!newObject[listKeys[key].split('/')[0]]) { newObject[listKeys[key].split('/')[0]] = []; }
-                    if(obj[listKeys[key].split('/')[0]].results) {
-                        newObject[listKeys[key].split('/')[0]].push(obj[listKeys[key].split('/')[0]].results);
+                    if(obj[listKeys[key].split('/')[0]].results&&!newObject[listKeys[key].split('/')[0]].length) {
+                        newObject[listKeys[key].split('/')[0]].push.apply(newObject[listKeys[key].split('/')[0]],obj[listKeys[key].split('/')[0]].results);
                     } else if(obj[listKeys[key].split('/')[0]]&&obj[listKeys[key].split('/')[0]][listKeys[key].split('/')[1]]) {
                         newObject[listKeys[key].split('/')[0]][0] = obj[listKeys[key].split('/')[0]];
                     }
@@ -407,6 +407,6 @@ const sphttp = (function(options = {}) {
         attach,
         rest,
         fetch: fetchWithTimeout,
-        version: '0.3.1'
+        version: '0.3.2'
     };
 });
