@@ -1,4 +1,4 @@
-const SpHttp = (function(options = {}) {
+var SpHttp = (function(options = {}) {
 
     if(!options.baseURL) { options.baseURL = '../'; }
     if(!options.headers) { options.headers = { "Accept": "application/json; odata=verbose" }; }
@@ -351,24 +351,30 @@ const SpHttp = (function(options = {}) {
         if(!config.expand) { config.expand = []; }
         if(typeof config.select === 'object') { config.select = config.select.join(); }
         if(typeof config.expand === 'object') { config.expand = config.expand.join(); }
-        if(!config.total) {
-            var total = await rest("_api/lists/getbytitle('"+listName+"')/ItemCount");
-            config.total = total.ItemCount || 1;
-        }
 
+        var scope = [];
+        scope[0] = rest("_api/lists/getbytitle('"+listName+"')/items?$top=1&$select=Id&$orderby=Id asc");
+        scope[1] = rest("_api/lists/getbytitle('"+listName+"')/items?$top=1&$select=Id&$orderby=Id desc");
+        var total = await Promise.all(scope);
+        config.total = [];
+        config.total[0] = total[0][0]&&total[0][0].Id ? total[0][0].Id : 0;
+        config.total[1] = total[1][0]&&total[1][0].Id ? total[1][0].Id : 0;
+        config.total[2] = (config.total[1] - config.total[0]) + 1;
+        config.total[3] = parseInt( config.total[2] / config.top ) + 1;
+        
         listKeys = config.select.split(',');
         var url = '?$top='+config.top;
         if(config.select&&config.select.length>0) { url += '&$select='+config.select; }
         if(config.expand&&config.expand.length>0) { url += '&$expand='+config.expand; }
 
-        var looped = parseInt(config.total / config.top) + 1, promises = [], results = [];
-
-        for(var i = 0; i < looped; i++) {
+        var promises = [], results = [];
+        config.total[0] -= 1;
+        for(var i = 0; i < config.total[3]; i++) {
             var info = "_api/web/lists/getbytitle('"+listName+"')/items"+url;
 
             if(i>0) {
-                var skiptoken = config.top * i;
-                info += "&$skiptoken=Paged%3dTRUE%26p_ID%3d"+skiptoken;
+                config.total[0] += config.top;
+                info += "&$skiptoken=Paged%3dTRUE%26p_ID%3d"+config.total[0];
             }
 
             var iterate;
@@ -407,6 +413,6 @@ const SpHttp = (function(options = {}) {
         attach,
         rest,
         fetch: fetchWithTimeout,
-        version: '0.3.2'
+        version: '0.3.3'
     };
 });
