@@ -1,4 +1,4 @@
-# SpHttp v0.3.2
+# SpHttp v0.3.3
 A lightweight promise-based Javascript library for Sharepoint Rest services (9Kb ONLY!)
 
 ## Get Started
@@ -65,7 +65,6 @@ SpHttp().list('ListName').iterate({
   top, // default: 5000 (optional)
   select, // example: ['ID','Title'] (optional)
   expand, // example: ['OtherList'] (optional)
-  total, // list length, example: 50000 (optional)
   action, // bind a function after each request, example: a => { return a.filter(b => b.ID === 93) } (optional)
 });
 ```
