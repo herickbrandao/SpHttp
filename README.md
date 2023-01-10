@@ -1,18 +1,18 @@
-# SpHttp v0.3.3
+# SpHttp v0.3.4
 A lightweight promise-based Javascript library for Sharepoint Rest services (9Kb ONLY!)
 
 ## Get Started
 ```html
-<script type="text/javascript" src="SpHttp.min.js"></script>
+<script type="text/javascript" src="sphttp.min.js"></script>
 <script type="text/javascript">
   // Get current user information
-  console.log( 'The lib is working!', await SpHttp().user() );
+  console.log( 'The lib is working!', await sphttp().user() );
 </script>
 ```
 
 ## The Instance
 ```js
-SpHttp({
+sphttp({
   baseURL, // default: '../' (optional)
   headers, // default: { "Accept": "application/json; odata=verbose" } (optional)
   timeout  // default: 8000 (optional)
@@ -22,7 +22,7 @@ SpHttp({
 ## Lists
 ```js
 // Get List Items Example
-SpHttp().list('ListName').get({
+sphttp().list('ListName').get({
   top, // default: 5000 (optional)
   select, // example: ['ID','Title'] (optional)
   expand, // example: ['OtherList'] (optional)
@@ -33,35 +33,35 @@ SpHttp().list('ListName').get({
 });
 
 // Create List Item Example
-SpHttp().list('ListName').post({
+sphttp().list('ListName').post({
   Title: 'New Item' // List Info.
 });
 
 // Update List Item Example
-SpHttp().list('ListName').put({
+sphttp().list('ListName').put({
   ID: 1, // required
   Title: 'Update Item' // List Info.
 });
 
 // Delete List Item Example
-SpHttp().list('ListName').del({
+sphttp().list('ListName').del({
   ID: 1, // required
 });
 
 // Recycle List Item Example
-SpHttp().list('ListName').recycle({
+sphttp().list('ListName').recycle({
   ID: 1, // required
 });
 
 // Attachment List Example
-SpHttp().list('ListName').attach({
+sphttp().list('ListName').attach({
   ID: 1, // required
   target: '#inputFile', // every file at <input type="file" id="inputFile" /> will be attached (optional)
   delete: 'filename.png' // filename that should be deleted (optional)
 });
 
 // Iterate List Example - Get a vast amount of data simultaneously (awesome for large lists like 50k of items)
-SpHttp().list('ListName').iterate({
+sphttp().list('ListName').iterate({
   top, // default: 5000 (optional)
   select, // example: ['ID','Title'] (optional)
   expand, // example: ['OtherList'] (optional)
@@ -72,23 +72,23 @@ SpHttp().list('ListName').iterate({
 ## Users
 ```js
 // Get Current User Info.
-SpHttp().user();
+sphttp().user();
 
 // Get User Info. by User Id
-SpHttp().user(1);
+sphttp().user(1);
 
 // Get User Info. by Title
-SpHttp().user('Name');
+sphttp().user('Name');
 
 // Get User Groups by ID
-SpHttp().user({
+sphttp().user({
   ID: 1, // required
 });
 ```
 
 ## Document Library
 ```js
-SpHttp().attach({
+sphttp().attach({
   library: '/sites/myWebSite/Documents', // relative lib URL (required)
   name: 'filename.png', // filename for GET/POST/UPDATE requests (optional)
   startswith: true, // default: false - filters the file by name (optional)
@@ -100,17 +100,17 @@ SpHttp().attach({
 ## Examples
 Get List Item ID,Title By ID
 ```js
-SpHttp().list('ListName').get({ ID: 11, select: ['ID', 'Title'] });
+sphttp().list('ListName').get({ ID: 11, select: ['ID', 'Title'] });
 ```
 
 Get Lists over 5000 items
 ```js
-SpHttp().list('ListName').get({ select: ['ID', 'Title'], recursive: true });
+sphttp().list('ListName').get({ select: ['ID', 'Title'], recursive: true });
 ```
 
 Make your own rest request
 ```js
-SpHttp().rest("_api/lists/getbytitle('ListName')/items?$skiptoken=Paged%3dTRUE%26p_ID%3d15000&$top=5000");
+sphttp().rest("_api/lists/getbytitle('ListName')/items?$skiptoken=Paged%3dTRUE%26p_ID%3d15000&$top=5000");
 ```
 
 Attach File(s) at List Item
@@ -118,17 +118,17 @@ Attach File(s) at List Item
 <input type="file" id="inputFile" />
 
 <script type="text/javascript" async>
-  const attachs = await SpHttp().list('ListName').attach({ ID: 97 }); // getter
+  const attachs = await sphttp().list('ListName').attach({ ID: 97 }); // getter
 
   document.getElementById("inputFile").addEventListener("change", function(e) {
-    SpHttp().list('ListName').attach({ ID: 97, target: '#inputFile' }); // setter - Warning: this method does not overwrite!
+    sphttp().list('ListName').attach({ ID: 97, target: '#inputFile' }); // setter - Warning: this method does not overwrite!
   });
 </script>
 ```
 
 Document Library - Filter
 ```js
-SpHttp().attach({ library: '/sites/myWebSite/Documents', name: 'file', startswith: true });
+sphttp().attach({ library: '/sites/myWebSite/Documents', name: 'file', startswith: true });
 ```
 
 ## Source of Inspiration
