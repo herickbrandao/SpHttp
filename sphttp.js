@@ -22,11 +22,16 @@ var sphttp = (function(options = {}) {
         const response = await fetch(options.baseURL+url, Object.assign({ signal: controller.signal, headers: options.headers }, fetchOptions))
             .then(async function(resp) { var retorno = true; try { retorno = await resp.json(); } catch(e) { return true; } return retorno; })
             .then(function(resp) {
-                if(resp&&resp["odata.error"]&&resp["odata.error"].message&&resp["odata.error"].message.value) { return { error: resp["odata.error"].message.value }; }
-                else if(resp&&resp["error"]&&resp["error"].message&&resp["error"].message.value) { return { error: resp["error"].message.value }; }
+                if(resp&&resp["odata.error"]&&resp["odata.error"].message&&resp["odata.error"].message.value) {
+                    throw(resp["odata.error"].message.value);
+                }
+                else if(resp&&resp["error"]&&resp["error"].message&&resp["error"].message.value) {
+                    throw(resp["error"].message.value);
+                } else if(resp&&resp.d&&resp.d.Id) {
+                    return resp.d;
+                }
                 return resp;
-            })
-            .catch(function(error) { return { error: { message: error } }; });
+            });
         clearTimeout(id);
         return response;
     }
@@ -145,8 +150,7 @@ var sphttp = (function(options = {}) {
         if(typeof item === 'object' && item.ID) {
             url += '('+item.ID+')';
         } else {
-            console.error('[ERROR] Put request data is wrong!');
-            return { error: '[ERROR] Put request data is wrong!' };
+            throw('[ERROR] Put request data is wrong!');
         }
 
         return fetchWithTimeout(url, { method: "POST", body: typeof item === 'object' ? JSON.stringify(item) : item });
@@ -164,8 +168,7 @@ var sphttp = (function(options = {}) {
         if(typeof item === 'object' && item.ID) {
             url += '('+item.ID+')/recycle()';
         } else {
-            console.error('[ERROR] Recycle request data is wrong!');
-            return { error: '[ERROR] Recycle request data is wrong!' };
+            throw('[ERROR] Recycle request data is wrong!');
         }
 
         return fetchWithTimeout(url, { method: "POST", body: typeof item === 'object' ? JSON.stringify(item) : item });
@@ -187,8 +190,7 @@ var sphttp = (function(options = {}) {
         } else if(typeof item === 'number') {
             url += '('+item+')';
         } else {
-            console.error('[ERROR] Delete request data is wrong!');
-            return { error: '[ERROR] Delete request data is wrong!' };
+            throw('[ERROR] Delete request data is wrong!');
         }
 
         return fetchWithTimeout(url, { method: "POST" });
@@ -231,13 +233,12 @@ var sphttp = (function(options = {}) {
                 break;
         }
 
-        console.error('[ERROR] User Request Failed!');
-        return { error: '[ERROR] User Request Failed!' };
+        throw('[ERROR] User Request Failed!');
     }
 
     function attachList(config = {}) {
-        if(!window.FileReader) { return { error: '[ERROR] Your browser does not have support for FileReader!' }; }
-        if(isNaN(config.ID)) { return { error: '[ERROR] List ID not found at attach request!' }; }
+        if(!window.FileReader) { throw('[ERROR] Your browser does not have support for FileReader!'); }
+        if(isNaN(config.ID)) { throw('[ERROR] List ID not found at attach request!'); }
         if(!config.target&&!config.delete) { return rest("_api/lists/getbytitle('"+listName+"')/items("+config.ID+")/AttachmentFiles"); }
 
         var items = typeof config.target==="string"&&document.querySelector(config.target) ? document.querySelector(config.target).files : false;
@@ -278,8 +279,8 @@ var sphttp = (function(options = {}) {
     }
 
     function attach(config = {}) {
-        if(!window.FileReader) { return { error: '[ERROR] Your browser does not have support for FileReader!' }; }
-        if(!config.library) { return { error: '[ERROR] List library not found at attach request!' }; }
+        if(!window.FileReader) { throw('[ERROR] Your browser does not have support for FileReader!'); }
+        if(!config.library) { throw('[ERROR] List library not found at attach request!'); }
         if(!config.name) { config.tname = ''; } else if(!config.startswith) { config.tname = "('"+config.name+"')"; }
         if(!config.target&&!config.delete) {
             if(config.startswith&&config.name) { config.tname = "?$filter=startswith(Name,'"+config.name+"')"; }
@@ -313,10 +314,11 @@ var sphttp = (function(options = {}) {
                     "X-HTTP-Method": "DELETE",
                 },options.headers);
                 
-                url = "_api/web/GetFolderByServerRelativeUrl('"+config.library+"')/Files"+config.delete;
-                return rest(url, { method: "DELETE" });
+                url = "_api/web/getfilebyserverrelativeurl('"+config.library+'/'+config.delete+"')";
+                if(config.recycle&&config.recycle==true) { url += '/recycle()'; }
+                return rest(url, { method: "POST" });
             } else if(config.delete) {
-                return { error: '[ERROR] Filename is missing!' };
+                throw('[ERROR] Filename is missing!');
             }
 
             return Promise.all(httpRes).then(function(res) { 
@@ -334,12 +336,12 @@ var sphttp = (function(options = {}) {
                     resolve(e.target.result);
                 }
                 reader.onerror = function(e) {
-                    reject({ error: e.target.error });
+                    reject(e.target.error);
                 }
                 reader.readAsArrayBuffer(file);
             } catch(error) {
                 console.error('[ERROR] '+error);
-                reject({ error: error });
+                reject(error);
             };
         });
     }
@@ -413,6 +415,6 @@ var sphttp = (function(options = {}) {
         attach,
         rest,
         fetch: fetchWithTimeout,
-        version: '0.3.4'
+        version: '0.4.0'
     };
 });
