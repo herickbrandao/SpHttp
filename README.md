@@ -1,4 +1,4 @@
-# SpHttp v0.3.4
+# SpHttp v0.4.0
 A lightweight promise-based Javascript library for Sharepoint Rest services (9Kb ONLY!)
 
 ## Get Started
@@ -94,6 +94,7 @@ sphttp().attach({
   startswith: true, // default: false - filters the file by name (optional)
   target: '#inputFile', // every file at <input type="file" id="inputFile" /> will be attached (optional)
   delete: 'filename.png' // filename that should be deleted (optional)
+  recycle: false, // set true if you want (delete attribute required)
 });
 ```
 
