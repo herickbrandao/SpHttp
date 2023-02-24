@@ -93,7 +93,7 @@ sphttp().attach({
   name: 'filename.png', // filename for GET/POST/UPDATE requests (optional)
   startswith: true, // default: false - filters the file by name (optional)
   target: '#inputFile', // every file at <input type="file" id="inputFile" /> will be attached (optional)
-  delete: 'filename.png' // filename that should be deleted (optional)
+  delete: 'filename.png', // filename that should be deleted (optional)
   recycle: false, // set true if you want (delete attribute required)
 });
 ```
