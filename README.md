@@ -1,4 +1,4 @@
-# SpHttp v0.4.0
+# SpHttp v0.4.1
 A lightweight promise-based Javascript library for Sharepoint Rest services (9Kb ONLY!)
 
 ## Get Started
@@ -22,29 +22,30 @@ sphttp({
 ## Lists
 ```js
 // Get List Items Example
-sphttp().list('ListName').get({
+sphttp().list('ListName').items({
   top, // default: 5000 (optional)
   select, // example: ['ID','Title'] (optional)
   expand, // example: ['OtherList'] (optional)
   orderby, // example: 'Title asc' (optional)
   filter, // example: 'ID eq 1' (optional)
-  recursive, // default: false (boolean) - get all list items [useful if the list is over 5000 items] (optional),
+  recursive, // default: false (boolean) - get all list items [useful if the list is over 5000 items] (optional)
   ID, // example: 1 - returns a specific item (optional)
+  avoidcache: true, // default: false (optional)
 });
 
 // Create List Item Example
-sphttp().list('ListName').post({
+sphttp().list('ListName').add({
   Title: 'New Item' // List Info.
 });
 
 // Update List Item Example
-sphttp().list('ListName').put({
+sphttp().list('ListName').update({
   ID: 1, // required
   Title: 'Update Item' // List Info.
 });
 
 // Delete List Item Example
-sphttp().list('ListName').del({
+sphttp().list('ListName').delete({
   ID: 1, // required
 });
 
