@@ -92,6 +92,7 @@ var sphttp = (function(options = {}) {
             url += '('+config.ID+')';
             if(config.select&&config.select.length>0) { url += first+'$select='+config.select; first = '&'; }
             if(config.expand&&config.expand.length>0) { url += first+'$expand='+config.expand; first = '&'; }
+            if(config.avoidcache) { url += first+'$v='+window.crypto.randomUUID(); first = '&'; }
             return rest(url);
         }
 
@@ -100,6 +101,7 @@ var sphttp = (function(options = {}) {
         if(config.select&&config.select.length>0) { url += first+'$select='+config.select; first = '&'; }
         if(config.expand&&config.expand.length>0) { url += first+'$expand='+config.expand; first = '&'; }
         if(config.filter&&config.filter.length>0) { url += first+'$filter='+config.filter; first = '&'; }
+        if(config.avoidcache) { url += first+'$v='+window.crypto.randomUUID(); first = '&'; }
 
         if(!config.recursive) {
             if(config.orderby&&config.orderby.length>0) { url += first+'$orderby='+config.orderby; first = '&'; }
@@ -415,6 +417,6 @@ var sphttp = (function(options = {}) {
         attach,
         rest,
         fetch: fetchWithTimeout,
-        version: '0.4.0'
+        version: '0.4.1'
     };
 });
