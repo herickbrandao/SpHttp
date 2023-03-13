@@ -27,8 +27,6 @@ var sphttp = (function(options = {}) {
                 }
                 else if(resp&&resp["error"]&&resp["error"].message&&resp["error"].message.value) {
                     throw(resp["error"].message.value);
-                } else if(resp&&resp.d&&resp.d.Id) {
-                    return resp.d;
                 }
                 return resp;
             });
