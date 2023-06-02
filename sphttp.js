@@ -1,3 +1,4 @@
+/** SPHTTP 0.5.0 - https://github.com/herickbrandao/SpHttp */
 var sphttp = (function(options = {}) {
 
     if(!options.baseURL) { options.baseURL = '../'; }
