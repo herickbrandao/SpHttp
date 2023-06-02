@@ -1,5 +1,5 @@
-# SpHttp v0.4.1
-A lightweight promise-based Javascript library for Sharepoint Rest services (9Kb ONLY!)
+# SpHttp v0.5.0
+A lightweight promise-based Javascript library for Sharepoint Rest services (10Kb ONLY!)
 
 ## Get Started
 ```html
@@ -30,6 +30,7 @@ sphttp().list('ListName').items({
   filter, // example: 'ID eq 1' (optional)
   recursive, // default: false (boolean) - get all list items [useful if the list is over 5000 items] (optional)
   ID, // example: 1 - returns a specific item (optional)
+  versions, // boolean - if true, will return the item history (optional, needs ID)
   avoidcache: true, // default: false (optional)
 });
 
@@ -99,6 +100,20 @@ sphttp().attach({
 });
 ```
 
+## Extending the library
+```js
+// method arguments
+sphttp().extend(name, callback);
+
+// example
+sphttp().extend('exampleItems', function(listName) {
+  return this.list(listName).items();
+});
+
+// then
+await sphttp().exampleItems('myExampleList');
+```
+
 ## Examples
 Get List Item ID,Title By ID
 ```js
@@ -113,6 +128,11 @@ sphttp().list('ListName').get({ select: ['ID', 'Title'], recursive: true });
 Make your own rest request
 ```js
 sphttp().rest("_api/lists/getbytitle('ListName')/items?$skiptoken=Paged%3dTRUE%26p_ID%3d15000&$top=5000");
+```
+
+Get item history (versions)
+```js
+sphttp().list('ListName').get({ ID: 11, select: ['ID', 'Title'], versions: true });
 ```
 
 Attach File(s) at List Item
@@ -131,6 +151,11 @@ Attach File(s) at List Item
 Document Library - Filter
 ```js
 sphttp().attach({ library: '/sites/myWebSite/Documents', name: 'file', startswith: true });
+```
+
+Get App Context (can be used to token refresh)
+```js
+await sphttp().contextinfo();
 ```
 
 ## Source of Inspiration
