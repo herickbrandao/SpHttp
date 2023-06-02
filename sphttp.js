@@ -90,6 +90,7 @@ var sphttp = (function(options = {}) {
 
         if(config.ID) {
             url += '('+config.ID+')';
+            if(config.versions) { url+= '/versions'; }
             if(config.select&&config.select.length>0) { url += first+'$select='+config.select; first = '&'; }
             if(config.expand&&config.expand.length>0) { url += first+'$expand='+config.expand; first = '&'; }
             if(config.avoidcache) { url += first+'$v='+window.crypto.randomUUID(); first = '&'; }
@@ -411,12 +412,26 @@ var sphttp = (function(options = {}) {
         return final;
     }
 
+    function contextinfo() {
+        return rest('_api/contextinfo', { method: "POST" });
+    }
+
+    function extend(name,callback) {
+        window.__sphttp_extensions[name] = callback;
+    }
+
+    window.__sphttp_extensions = window.__sphttp_extensions || {};
+
     return {
         list,
         user,
         attach,
         rest,
+        contextinfo,
+        extend,
         fetch: fetchWithTimeout,
-        version: '0.4.1'
+        options,
+        version: '0.5.0',
+        ...window.__sphttp_extensions
     };
 });
