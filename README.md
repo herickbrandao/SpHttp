@@ -153,7 +153,7 @@ Document Library - Filter
 sphttp().attach({ library: '/sites/myWebSite/Documents', name: 'file', startswith: true });
 ```
 
-Get App Context (can be used to token refresh)
+Get App Context (can be used for token refresh)
 ```js
 await sphttp().contextinfo();
 ```
