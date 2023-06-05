@@ -100,7 +100,7 @@ sphttp().attach({
 });
 ```
 
-## Extending the library
+## Extending library
 ```js
 // method arguments
 sphttp().extend(name, callback);
