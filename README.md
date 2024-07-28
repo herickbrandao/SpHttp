@@ -1,28 +1,30 @@
-# SpHttp v0.5.0
-A lightweight promise-based Javascript library for Sharepoint Rest services (10Kb ONLY!)
+# SpHttp v1.0.0-ALPHA
+A lightweight promise-based Javascript library for Sharepoint Rest services
 
 ## Get Started
 ```html
 <script type="text/javascript" src="sphttp.min.js"></script>
 <script type="text/javascript">
   // Get current user information
-  console.log( 'The lib is working!', await sphttp().user() );
+  console.log( 'The lib is working!', await sphttp.user() );
 </script>
 ```
 
 ## The Instance
 ```js
-sphttp({
-  baseURL, // default: '../' (optional)
-  headers, // default: { "Accept": "application/json; odata=verbose" } (optional)
-  timeout  // default: 8000 (optional)
-})
+  sphttp.baseURL; // default: '../'
+  sphttp.cleanResponse; // default: true
+  sphttp.digest; // default: null (if it's empty, the code is going to set it)
+  sphttp.headers; // default: { "Accept": "application/json; odata=verbose" }
+  sphttp.timeout; // default: 15000
+  sphttp.top; // default: 5000
+  sphttp.version;
 ```
 
 ## Lists
 ```js
 // Get List Items Example
-sphttp().list('ListName').items({
+sphttp.items('ListName', {
   top, // default: 5000 (optional)
   select, // example: ['ID','Title'] (optional)
   expand, // example: ['OtherList'] (optional)
@@ -35,62 +37,52 @@ sphttp().list('ListName').items({
 });
 
 // Create List Item Example
-sphttp().list('ListName').add({
+sphttp.add('ListName', {
   Title: 'New Item' // List Info.
 });
 
 // Update List Item Example
-sphttp().list('ListName').update({
+sphttp.update('ListName', {
   ID: 1, // required
   Title: 'Update Item' // List Info.
 });
 
 // Delete List Item Example
-sphttp().list('ListName').delete({
+sphttp.delete('ListName', {
   ID: 1, // required
 });
 
 // Recycle List Item Example
-sphttp().list('ListName').recycle({
-  ID: 1, // required
-});
+sphttp.recycle('ListName', { ID: 1 });
+// OR
+sphttp.recycle('ListName', 1);
 
 // Attachment List Example
-sphttp().list('ListName').attach({
+sphttp.attach('ListName', {
   ID: 1, // required
   target: '#inputFile', // every file at <input type="file" id="inputFile" /> will be attached (optional)
   delete: 'filename.png' // filename that should be deleted (optional)
-});
-
-// Iterate List Example - Get a vast amount of data simultaneously (awesome for large lists like 50k of items)
-sphttp().list('ListName').iterate({
-  top, // default: 5000 (optional)
-  select, // example: ['ID','Title'] (optional)
-  expand, // example: ['OtherList'] (optional)
-  action, // bind a function after each request, example: a => { return a.filter(b => b.ID === 93) } (optional)
 });
 ```
 
 ## Users
 ```js
 // Get Current User Info.
-sphttp().user();
+sphttp.user();
 
 // Get User Info. by User Id
-sphttp().user(1);
+sphttp.user(1);
 
 // Get User Info. by Title
-sphttp().user('Name');
+sphttp.user('Name');
 
 // Get User Groups by ID
-sphttp().user({
-  ID: 1, // required
-});
+sphttp.user({ ID: 1 });
 ```
 
 ## Document Library
 ```js
-sphttp().attach({
+sphttp.attachDoc({
   library: '/sites/myWebSite/Documents', // relative lib URL (required)
   name: 'filename.png', // filename for GET/POST/UPDATE requests (optional)
   startswith: true, // default: false - filters the file by name (optional)
@@ -100,39 +92,25 @@ sphttp().attach({
 });
 ```
 
-## Extending library
-```js
-// method arguments
-sphttp().extend(name, callback);
-
-// example
-sphttp().extend('exampleItems', function(listName) {
-  return this.list(listName).items();
-});
-
-// then
-await sphttp().exampleItems('myExampleList');
-```
-
 ## Examples
 Get List Item ID,Title By ID
 ```js
-sphttp().list('ListName').get({ ID: 11, select: ['ID', 'Title'] });
+sphttp.items('ListName', { ID: 11, select: ['ID', 'Title'] });
 ```
 
 Get Lists over 5000 items
 ```js
-sphttp().list('ListName').get({ select: ['ID', 'Title'], recursive: true });
+sphttp.items('ListName', { select: ['ID', 'Title'], recursive: true });
 ```
 
 Make your own rest request
 ```js
-sphttp().rest("_api/lists/getbytitle('ListName')/items?$skiptoken=Paged%3dTRUE%26p_ID%3d15000&$top=5000");
+sphttp.rest("_api/lists/getbytitle('ListName')/items?$skiptoken=Paged%3dTRUE%26p_ID%3d15000&$top=5000");
 ```
 
 Get item history (versions)
 ```js
-sphttp().list('ListName').get({ ID: 11, select: ['ID', 'Title'], versions: true });
+sphttp.items('ListName', { ID: 11, select: ['ID', 'Title'], versions: true });
 ```
 
 Attach File(s) at List Item
@@ -140,22 +118,17 @@ Attach File(s) at List Item
 <input type="file" id="inputFile" />
 
 <script type="text/javascript" async>
-  const attachs = await sphttp().list('ListName').attach({ ID: 97 }); // getter
+  const attachs = await sphttp.attach('ListName', { ID: 97 }); // getter
 
   document.getElementById("inputFile").addEventListener("change", function(e) {
-    sphttp().list('ListName').attach({ ID: 97, target: '#inputFile' }); // setter - Warning: this method does not overwrite!
+    sphttp.attach('ListName', { ID: 97, target: '#inputFile' }); // setter - Warning: this method does not overwrite!
   });
 </script>
 ```
 
 Document Library - Filter
 ```js
-sphttp().attach({ library: '/sites/myWebSite/Documents', name: 'file', startswith: true });
-```
-
-Get App Context (can be used for token refresh)
-```js
-await sphttp().contextinfo();
+sphttp.attachDoc({ library: '/sites/myWebSite/Documents', name: 'file', startswith: true });
 ```
 
 ## Source of Inspiration
