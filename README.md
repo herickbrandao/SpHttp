@@ -92,6 +92,24 @@ sphttp.attachDoc({
 });
 ```
 
+## Batch support
+```js
+await sphttp.batch([
+    { url: "https://yourservice.sharepoint.com/sites/yoursite/_api/lists/getbytitle('listName')/items(75)", action: "UPDATE",
+      item: {
+        Title: 'UPDATE EXAMPLE', __metadata: {type: "SP.Data.listNameListItem"}
+      }
+    },
+    { url: "https://yourservice.sharepoint.com/sites/yoursite/_api/lists/getbytitle('listName')/items", action: "POST",
+      item: {
+        Title: 'CREATE EXAMPLE', __metadata: {type: "SP.Data.listNameListItem"}
+      }
+    },
+    { url: "https://yourservice.sharepoint.com/sites/yoursite/_api/lists/getbytitle('listName')/items?$select=Example", action: "GET" },
+    { url: "https://yourservice.sharepoint.com/sites/yoursite/_api/lists/getbytitle('listName')/items?$select=ID", action: "GET" },
+])
+```
+
 ## Examples
 Get List Item ID,Title By ID
 ```js
