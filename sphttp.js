@@ -1,4 +1,4 @@
-/** SPHTTP 1.0.0-ALPHA - https://github.com/herickbrandao/SpHttp */
+/** SPHTTP 1.0.0 - https://github.com/herickbrandao/SpHttp */
 var sphttp = {
     baseURL: "../",
     cleanResponse: true,
@@ -458,6 +458,10 @@ var sphttp = {
                 body: bodyBoundary
             })
             .then(function(raw) {
+                if(typeof raw !== "string") {
+                    return { ok: false, data: raw };
+                }
+
                 var responses = [],
                     parsedCtx = '',
                     parsedRaw = raw.split("\r\n\r\n");
