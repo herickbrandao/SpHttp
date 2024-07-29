@@ -1,4 +1,4 @@
-# SpHttp v1.0.0-ALPHA
+# SpHttp v1.0.0
 A lightweight promise-based Javascript library for Sharepoint Rest services
 
 ## Get Started
