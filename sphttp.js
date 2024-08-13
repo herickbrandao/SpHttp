@@ -1,4 +1,4 @@
-/** SPHTTP 1.0.0 - https://github.com/herickbrandao/SpHttp */
+/** SPHTTP 1.0.1 - https://github.com/herickbrandao/SpHttp */
 var sphttp = {
     baseURL: "../",
     cleanResponse: true,
@@ -9,7 +9,7 @@ var sphttp = {
     _headers: {},
     timeout: 15000,
     top: 5000,
-    version: "1.0.0",
+    version: "1.0.1",
 
     async items(list, obj = {}) {
         if(!list) {
@@ -58,7 +58,9 @@ var sphttp = {
                 requestUrl += concatenation + "$v=" + window.crypto.randomUUID();
                 concatenation = "&";
             }
-            return this._rest(requestUrl);
+            return this._rest(requestUrl, {}, {
+                select: obj.select.split(",")
+            });
         }
 
         requestUrl += concatenation + "$top=" + top;
@@ -399,8 +401,6 @@ var sphttp = {
 
                 switch(changesetRequests[i].action) {
                     case "UPDATE":
-                        //if(changeUrl) { changesetRequests[i].url += "(" + (item.ID || item.Id) + ")"; }
-
                         propData.push("PATCH " + changesetRequests[i].url + " HTTP/1.1");
                         propData.push("If-Match: *");
                         propData.push("Content-Type: application/json;odata=verbose");
@@ -409,8 +409,6 @@ var sphttp = {
                         propData.push("");
                         break;
                     case "DELETE":
-                        //if(changeUrl) { changesetRequests[i].url += "(" + (item.ID || item.Id) + ")"; }
-
                         propData.push("DELETE " + changesetRequests[i].url + " HTTP/1.1");
                         propData.push("If-Match: *");
                         propData.push("");
