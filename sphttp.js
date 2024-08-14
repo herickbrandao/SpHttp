@@ -234,7 +234,7 @@ var sphttp = {
                 var name = items[i].name;
                 url = "_api/lists/GetByTitle('" + list + "')/items(" + ID + ")/AttachmentFiles/add(FileName='" + name + "')";
 
-                httpRes.push(_this._fetch(url, {
+                httpRes.push(_this._rest(url, {
                     method: "POST",
                     body: promises[i]
                 }));
