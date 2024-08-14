@@ -184,6 +184,9 @@ var sphttp = {
 
     async attach(list, config = {}) {
         await this._verifyDigest();
+        this._headers = Object.assign({
+            "X-RequestDigest": this.digest,
+        }, this.headers);
 
         var ID = config.ID || config.Id || (typeof config === 'number' ? config : null) || null;
         if(!window.FileReader) {
@@ -193,9 +196,6 @@ var sphttp = {
             throw ('[SPHTTP] List ID not found at attach request!');
         }
         if(!config.target && !config.delete) {
-            this._headers = Object.assign({
-                "X-RequestDigest": this.digest,
-            }, this.headers);
             return this._rest("_api/lists/getbytitle('" + list + "')/items(" + ID + ")/AttachmentFiles");
         }
 
@@ -254,7 +254,6 @@ var sphttp = {
         await this._verifyDigest();
         this._headers = Object.assign({
             "X-RequestDigest": this.digest,
-            "content-length": promises[i].byteLength
         }, this.headers);
 
         if(!window.FileReader) {
