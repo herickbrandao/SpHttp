@@ -211,6 +211,7 @@ var sphttp = {
         }
 
         var items = typeof config.target === "string" && document.querySelector(config.target) ? document.querySelector(config.target).files : false;
+        var _this = this;
         var appends = [];
 
         for(var i in items) {
@@ -224,16 +225,16 @@ var sphttp = {
                 url = '';
 
             for(var i in promises) {
-                this._headers = Object.assign({
-                    "X-RequestDigest": this.digest,
+                _this._headers = Object.assign({
+                    "X-RequestDigest": _this.digest,
                     "content-length": promises[i].byteLength
-                }, this.headers);
+                }, _this.headers);
 
                 var bytes = new Uint8Array(promises[i]);
                 var name = items[i].name;
                 url = "_api/lists/GetByTitle('" + list + "')/items(" + ID + ")/AttachmentFiles/add(FileName='" + name + "')";
 
-                httpRes.push(this._fetch(url, {
+                httpRes.push(_this._fetch(url, {
                     method: "POST",
                     body: promises[i]
                 }));
@@ -281,6 +282,7 @@ var sphttp = {
         }
 
         var items = typeof config.target === "string" && document.querySelector(config.target) ? document.querySelector(config.target).files : false;
+        var _this = this;
         var appends = [];
 
         for(var i in items) {
@@ -294,15 +296,15 @@ var sphttp = {
                 url = '';
 
             for(var i in promises) {
-                this._headers = Object.assign({
+                _this._headers = Object.assign({
                     "content-length": promises[i].byteLength
-                }, this._headers);
+                }, _this._headers);
 
                 var bytes = new Uint8Array(promises[i]);
                 var name = config.name ? config.name : items[i].name;
                 url = "_api/web/GetFolderByServerRelativeUrl('" + config.library + "')/Files/Add(url='" + name + "', overwrite=true)";
 
-                httpRes.push(this._rest(url, {
+                httpRes.push(_this._rest(url, {
                     method: "POST",
                     body: promises[i]
                 }));
