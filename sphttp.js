@@ -231,7 +231,7 @@ var sphttp = {
 
                 var bytes = new Uint8Array(promises[i]);
                 var name = items[i].name;
-                url = "_api/lists/GetByTitle('" + listName + "')/items(" + ID + ")/AttachmentFiles/add(FileName='" + name + "')";
+                url = "_api/lists/GetByTitle('" + list + "')/items(" + ID + ")/AttachmentFiles/add(FileName='" + name + "')";
 
                 httpRes.push(this._fetch(url, {
                     method: "POST",
