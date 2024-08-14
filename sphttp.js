@@ -1,4 +1,4 @@
-/** SPHTTP 1.0.1 - https://github.com/herickbrandao/SpHttp */
+/** SPHTTP 1.0.2 - https://github.com/herickbrandao/SpHttp */
 var sphttp = {
     baseURL: "../",
     cleanResponse: true,
@@ -9,7 +9,7 @@ var sphttp = {
     _headers: {},
     timeout: 15000,
     top: 5000,
-    version: "1.0.1",
+    version: "1.0.2",
 
     async items(list, obj = {}) {
         if(!list) {
@@ -184,10 +184,6 @@ var sphttp = {
 
     async attach(list, config = {}) {
         await this._verifyDigest();
-        this._headers = Object.assign({
-            "X-RequestDigest": this.digest,
-            "content-length": promises[i].byteLength
-        }, this.headers);
 
         var ID = config.ID || config.Id || (typeof config === 'number' ? config : null) || null;
         if(!window.FileReader) {
@@ -197,6 +193,9 @@ var sphttp = {
             throw ('[SPHTTP] List ID not found at attach request!');
         }
         if(!config.target && !config.delete) {
+            this._headers = Object.assign({
+                "X-RequestDigest": this.digest,
+            }, this.headers);
             return this._rest("_api/lists/getbytitle('" + list + "')/items(" + ID + ")/AttachmentFiles");
         }
 
@@ -226,8 +225,9 @@ var sphttp = {
 
             for(var i in promises) {
                 this._headers = Object.assign({
+                    "X-RequestDigest": this.digest,
                     "content-length": promises[i].byteLength
-                }, this._headers);
+                }, this.headers);
 
                 var bytes = new Uint8Array(promises[i]);
                 var name = items[i].name;
