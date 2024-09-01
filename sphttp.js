@@ -1,4 +1,4 @@
-/** SPHTTP 1.0.2 - https://github.com/herickbrandao/SpHttp */
+/** SPHTTP 1.0.3 - https://github.com/herickbrandao/SpHttp */
 var sphttp = {
     baseURL: "../",
     cleanResponse: true,
@@ -9,7 +9,7 @@ var sphttp = {
     _headers: {},
     timeout: 15000,
     top: 5000,
-    version: "1.0.2",
+    version: "1.0.3",
 
     async items(list, obj = {}) {
         if(!list) {
@@ -220,7 +220,7 @@ var sphttp = {
             }
         }
 
-        return Promise.all(appends).then(function(promises) {
+        return Promise.all(appends).then(async function(promises) {
             var httpRes = [],
                 url = '';
 
@@ -234,20 +234,21 @@ var sphttp = {
                 var name = items[i].name;
                 url = "_api/lists/GetByTitle('" + list + "')/items(" + ID + ")/AttachmentFiles/add(FileName='" + name + "')";
 
-                httpRes.push(_this._rest(url, {
+                var ctx = await _this._rest(url, {
                     method: "POST",
                     body: promises[i]
-                }));
+                });
+
+                httpRes.push(ctx);
             }
 
-            return Promise.all(httpRes).then(function(res) {
-                for(var i in res) {
-                    if(res[i] && res[i].d) {
-                        res[i] = res[i].d;
-                    }
+            for(let i in httpRes) {
+                if(httpRes[i] && httpRes[i].d) {
+                    httpRes[i] = httpRes[i].d;
                 }
-                return res;
-            });
+            }
+
+            return httpRes;
         });
     },
 
@@ -291,7 +292,7 @@ var sphttp = {
             }
         }
 
-        return Promise.all(appends).then(function(promises) {
+        return Promise.all(appends).then(async function(promises) {
             var httpRes = [],
                 url = '';
 
@@ -304,20 +305,21 @@ var sphttp = {
                 var name = config.name ? config.name : items[i].name;
                 url = "_api/web/GetFolderByServerRelativeUrl('" + config.library + "')/Files/Add(url='" + name + "', overwrite=true)";
 
-                httpRes.push(_this._rest(url, {
+                var ctx = await _this._rest(url, {
                     method: "POST",
                     body: promises[i]
-                }));
+                });
+
+                httpRes.push(ctx);
             }
 
-            return Promise.all(httpRes).then(function(res) {
-                for(var i in res) {
-                    if(res[i] && res[i].d) {
-                        res[i] = res[i].d;
-                    }
+            for(let i in httpRes) {
+                if(httpRes[i] && httpRes[i].d) {
+                    httpRes[i] = httpRes[i].d;
                 }
-                return res;
-            });
+            }
+
+            return httpRes;
         });
     },
 
