@@ -296,7 +296,7 @@ class SpHttp {
 
     // --- INTERNOS ---
 
-    private async _verifyDigest(refresh: boolean = false): Promise<string> {
+    public async _verifyDigest(refresh: boolean = false): Promise<string> {
         const el = document.querySelector("#__REQUESTDIGEST") as HTMLInputElement;
         if (el?.value && !refresh) {
             this.digest = el.value;
@@ -307,7 +307,7 @@ class SpHttp {
         return this.digest || '';
     }
 
-    private _rest(url: string, fetchOptions: any = {}, config: any = {}): Promise<any> {
+    public _rest(url: string, fetchOptions: any = {}, config: any = {}): Promise<any> {
         return this._fetch(this.baseURL + url, fetchOptions).then((resp: any) => {
             if (resp?.d?.results) return resp.d.results.map((res: any) => this._cleanObj(res, config.select || []));
             if (resp?.d) return this._cleanObj(resp.d, config.select || []);
@@ -315,7 +315,7 @@ class SpHttp {
         });
     }
 
-    private async _fetch(url: string, fetchOptions: any): Promise<any> {
+    public async _fetch(url: string, fetchOptions: any): Promise<any> {
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), this.timeout);
         try {
@@ -330,7 +330,7 @@ class SpHttp {
         } catch (e) { return this._error(e); }
     }
 
-    private _cleanObj(obj: any, keys: string[]): any {
+    public _cleanObj(obj: any, keys: string[]): any {
         if (!this.cleanResponse || !keys.length || keys[0] === "") return obj;
         const newObj: any = {};
         for (const key of keys) {
@@ -340,7 +340,7 @@ class SpHttp {
         return newObj;
     }
 
-    private _getFileBuffer(file: File): Promise<ArrayBuffer> {
+    public _getFileBuffer(file: File): Promise<ArrayBuffer> {
         return new Promise((res, rej) => {
             const reader = new FileReader();
             reader.onload = (e: any) => res(e.target.result);
@@ -349,7 +349,7 @@ class SpHttp {
         });
     }
 
-    private _recursive(requestUrl: string, obj: any): Promise<any> {
+    public _recursive(requestUrl: string, obj: any): Promise<any> {
         return new Promise((res, rej) => {
             const content: any[] = [];
             const loop = async (url: string) => {
