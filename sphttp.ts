@@ -1,4 +1,5 @@
 /** SPHTTP 1.0.3 - TypeScript compatible version */
+
 interface ISpHttpConfig {
     ID?: number | string;
     Id?: number | string;
@@ -32,19 +33,19 @@ interface IHeadersMap {
     [key: string]: string;
 }
 
-export default {
-    baseURL: string = "../";
-    cleanResponse: boolean = true;
-    digest: string | null = null;
-    headers: IHeadersMap = {
+class SpHttp {
+    public baseURL: string = "../";
+    public cleanResponse: boolean = true;
+    public digest: string | null = null;
+    public headers: IHeadersMap = {
         "Accept": "application/json; odata=verbose"
     };
-    _headers: IHeadersMap = {};
-    timeout: number = 15000;
-    top: number = 5000;
-    version: string = "1.0.3";
+    private _headers: IHeadersMap = {};
+    public timeout: number = 15000;
+    public top: number = 5000;
+    public version: string = "1.0.3";
 
-    _createUUID(): string {
+    private _createUUID(): string {
         // Compatible replacement for crypto.randomUUID()
         return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c: string) => {
             const r = (Math.random() * 16) | 0;
@@ -53,18 +54,18 @@ export default {
         });
     }
 
-    _error(e: any, obj: any = {}): any {
+    private _error(e: any, obj: any = {}): any {
         console.error(e, obj);
         return e;
     }
 
-    _normalizeSelectExpand(value: string | string[] | undefined): string[] {
+    private _normalizeSelectExpand(value: string | string[] | undefined): string[] {
         if (!value) return [];
         if (Array.isArray(value)) return value;
         return [value];
     }
 
-    async items(list: string, obj: ISpHttpConfig = {}): Promise<any> {
+    public async items(list: string, obj: ISpHttpConfig = {}): Promise<any> {
         if (!list) {
             return this._error("Your object has not a list name", obj);
         }
@@ -148,7 +149,7 @@ export default {
         });
     }
 
-    async add(list: string, obj: any): Promise<any> {
+    public async add(list: string, obj: any): Promise<any> {
         await this._verifyDigest();
 
         this._headers = Object.assign({
@@ -164,7 +165,7 @@ export default {
         });
     }
 
-    async update(list: string, obj: any): Promise<any> {
+    public async update(list: string, obj: any): Promise<any> {
         await this._verifyDigest();
 
         this._headers = Object.assign({
@@ -190,7 +191,7 @@ export default {
         });
     }
 
-    async recycle(list: string, obj: any): Promise<any> {
+    public async recycle(list: string, obj: any): Promise<any> {
         await this._verifyDigest();
 
         this._headers = Object.assign({
@@ -215,7 +216,7 @@ export default {
         });
     }
 
-    async delete(list: string, obj: any): Promise<any> {
+    public async delete(list: string, obj: any): Promise<any> {
         await this._verifyDigest();
 
         this._headers = Object.assign({
@@ -242,7 +243,7 @@ export default {
         });
     }
 
-    async attach(list: string, config: ISpHttpConfig = {}): Promise<any> {
+    public async attach(list: string, config: ISpHttpConfig = {}): Promise<any> {
         await this._verifyDigest();
 
         this._headers = Object.assign({
@@ -314,7 +315,7 @@ export default {
         return results;
     }
 
-    async attachDoc(config: ISpHttpConfig = {}): Promise<any> {
+    public async attachDoc(config: ISpHttpConfig = {}): Promise<any> {
         await this._verifyDigest();
 
         this._headers = Object.assign({
@@ -385,7 +386,7 @@ export default {
         return results;
     }
 
-    async user(config: any = false): Promise<any> {
+    public async user(config: any = false): Promise<any> {
         await this._verifyDigest();
 
         this._headers = Object.assign({
@@ -436,7 +437,7 @@ export default {
         throw ("[SPHTTP] User Request Failed!");
     }
 
-    async batch(batchRequests: IBatchRequest[]): Promise<any> {
+    public async batch(batchRequests: IBatchRequest[]): Promise<any> {
         await this._verifyDigest();
 
         const batchBoundary = this._createUUID();
@@ -590,7 +591,7 @@ export default {
         return responses;
     }
 
-    async rest(url: string, fetchOptions: RequestInit = {}, config: any = {}): Promise<any> {
+    public async rest(url: string, fetchOptions: RequestInit = {}, config: any = {}): Promise<any> {
         await this._verifyDigest();
 
         this._headers = Object.assign({
@@ -602,7 +603,7 @@ export default {
         return this._rest(url, fetchOptions, config);
     }
 
-    async _verifyDigest(refresh: boolean = false): Promise<string> {
+    public async _verifyDigest(refresh: boolean = false): Promise<string> {
         const digestEl = document.querySelector("#__REQUESTDIGEST") as HTMLInputElement | null;
 
         if (digestEl && digestEl.value && !refresh) {
@@ -624,7 +625,7 @@ export default {
         return this.digest || "";
     }
 
-    _rest(url: string, fetchOptions: RequestInit = {}, config: any = {}): Promise<any> {
+    public _rest(url: string, fetchOptions: RequestInit = {}, config: any = {}): Promise<any> {
         const fullUrl = this.baseURL + url;
 
         return this._fetch(fullUrl, fetchOptions).then((resp: any) => {
@@ -640,7 +641,7 @@ export default {
         });
     }
 
-    async _fetch(url: string, fetchOptions: RequestInit = {}): Promise<any> {
+    public async _fetch(url: string, fetchOptions: RequestInit = {}): Promise<any> {
         const controller = new AbortController();
         const abortFetch = setTimeout(() => {
             controller.abort();
@@ -702,7 +703,7 @@ export default {
         }
     }
 
-    _cleanObj(obj: any, listKeys: string[] = []): any {
+    public _cleanObj(obj: any, listKeys: string[] = []): any {
         if (this.cleanResponse && listKeys.length && listKeys[0] !== "") {
             const newObject: any = {};
 
@@ -740,7 +741,7 @@ export default {
         return obj;
     }
 
-    _reset(): void {
+    public _reset(): void {
         this.baseURL = "../";
         this.cleanResponse = true;
         this.digest = null;
@@ -752,7 +753,7 @@ export default {
         this.top = 5000;
     }
 
-    _getFileBuffer(file: File): Promise<ArrayBuffer> {
+    public _getFileBuffer(file: File): Promise<ArrayBuffer> {
         return new Promise((resolve, reject) => {
             try {
                 const reader = new FileReader();
@@ -773,7 +774,7 @@ export default {
         });
     }
 
-    _recursive(requestUrl: string, obj: ISpHttpConfig = {}): Promise<any> {
+    public _recursive(requestUrl: string, obj: ISpHttpConfig = {}): Promise<any> {
         const _this = this;
         return new Promise((resolve, reject) => {
             const content: any[] = [];
@@ -809,3 +810,5 @@ export default {
         });
     }
 }
+
+export default new SpHttp();
