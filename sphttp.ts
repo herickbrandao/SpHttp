@@ -62,7 +62,7 @@ class SpHttp {
     private _normalizeSelectExpand(value: string | string[] | undefined): string[] {
         if (!value) return [];
         if (Array.isArray(value)) return value;
-        return [value];
+        return value.split(',').map((s) => s.trim()).filter(Boolean);
     }
 
     public async items(list: string, obj: ISpHttpConfig = {}): Promise<any> {
@@ -145,7 +145,7 @@ class SpHttp {
 
         return this._recursive(this.baseURL + requestUrl, {
             ...obj,
-            select: selectStr
+            select: selectArr
         });
     }
 
